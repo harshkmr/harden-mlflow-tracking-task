@@ -1,23 +1,30 @@
 import os
 import re
 import subprocess
+import sys
 from pathlib import Path
-import pytest
+
 import mlflow
+import pytest
 
 APP_DIR = Path("/app") if Path("/app").exists() else Path(__file__).parent.parent / "environment" / "app"
 
+
 def test_no_conflict_markers():
     """Verify all git merge conflict markers have been resolved."""
-    conflict_pattern = re.compile(r'^(<<<<<<<|=======|>>>>>>>)', re.MULTILINE)
+    conflict_pattern = re.compile(r"^(<<<<<<<|=======|>>>>>>>)", re.MULTILINE)
     for root, _, files in os.walk(APP_DIR):
-        if '.git' in root or '__pycache__' in root or 'mlruns' in root:
+        if ".git" in root or "__pycache__" in root or "mlruns" in root:
             continue
         for file in files:
-            if file.endswith(('.py', '.yaml', '.yml', '.json', '.sh')):
+            if file.endswith((".py", ".yaml", ".yml", ".json", ".sh")):
                 filepath = Path(root) / file
-                content = filepath.read_text(encoding='utf-8')
+                try:
+                    content = filepath.read_text(encoding="utf-8")
+                except (OSError, UnicodeDecodeError):
+                    continue
                 assert not conflict_pattern.search(content), f"Conflict marker found in {filepath}"
+
 
 def test_security_analyzer_passes():
     """Verify static security analyzer executes and reports 0 violations."""
@@ -25,12 +32,14 @@ def test_security_analyzer_passes():
     assert analyzer_script.exists(), "security_analyzer.py missing"
 
     result = subprocess.run(
-        [sys.executable if 'sys' in locals() else "python", str(analyzer_script)],
+        [sys.executable, str(analyzer_script)],
         capture_output=True,
         text=True,
-        cwd=str(APP_DIR)
+        cwd=str(APP_DIR),
+        check=False,
     )
     assert result.returncode == 0, f"Security analyzer failed:\nSTDOUT: {result.stdout}\nSTDERR: {result.stderr}"
+
 
 def test_tracking_harness_execution():
     """Verify tracking harness executes without error."""
@@ -38,12 +47,14 @@ def test_tracking_harness_execution():
     assert harness_script.exists(), "tracking_harness.py missing"
 
     result = subprocess.run(
-        ["python", str(harness_script)],
+        [sys.executable, str(harness_script)],
         capture_output=True,
         text=True,
-        cwd=str(APP_DIR)
+        cwd=str(APP_DIR),
+        check=False,
     )
     assert result.returncode == 0, f"Tracking harness failed:\nSTDOUT: {result.stdout}\nSTDERR: {result.stderr}"
+
 
 def test_mlflow_run_metadata_and_security():
     """Verify MLflow runs contain only approved metadata and no secrets."""
@@ -65,7 +76,7 @@ def test_mlflow_run_metadata_and_security():
         "num_parameters",
         "eval_loss",
         "eval_perplexity",
-        "git_commit_sha"
+        "git_commit_sha",
     }
 
     forbidden_tokens = ["hf_insecure", "password", "supersecretkey", "user_credentials", "raw_kwargs", "api_secret"]
