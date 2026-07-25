@@ -1,9 +1,9 @@
 import math
 import os
-import sys
+
+from config import APPROVED_METADATA_KEYS, EXPERIMENT_NAME
 import mlflow
 import torch
-from config import APPROVED_METADATA_KEYS, ARTIFACT_LOCATION, EXPERIMENT_NAME, TRACKING_URI
 from transformers import AutoModelForCausalLM, AutoTokenizer
 
 
@@ -65,7 +65,7 @@ def main():
         mlflow.log_dict(metadata, "eval_metadata.json")
 # =======
     # Hardened tracking URI and artifact path setup
-    # mlflow.set_tracking_uri(TRACKING_URI)
+    # mlflow.set_tracking_uri(config.TRACKING_URI)
     # mlflow.set_experiment(EXPERIMENT_NAME)
 
     # raw_metadata = evaluate_model()
