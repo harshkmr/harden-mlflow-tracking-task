@@ -5,7 +5,6 @@ import sys
 from pathlib import Path
 
 import mlflow
-import pytest
 
 APP_DIR = Path("/app") if Path("/app").exists() else Path(__file__).parent.parent / "environment" / "app"
 
@@ -26,10 +25,10 @@ def test_no_conflict_markers():
                 assert not conflict_pattern.search(content), f"Conflict marker found in {filepath}"
 
 
-def test_security_analyzer_passes():
-    """Verify static security analyzer executes and reports 0 violations."""
-    analyzer_script = APP_DIR / "security_analyzer.py"
-    assert analyzer_script.exists(), "security_analyzer.py missing"
+def test_policy_analyzer_passes():
+    """Verify static policy analyzer executes and reports 0 violations."""
+    analyzer_script = APP_DIR / "policy_analyzer.py"
+    assert analyzer_script.exists(), "policy_analyzer.py missing"
 
     result = subprocess.run(
         [sys.executable, str(analyzer_script)],
@@ -38,7 +37,7 @@ def test_security_analyzer_passes():
         cwd=str(APP_DIR),
         check=False,
     )
-    assert result.returncode == 0, f"Security analyzer failed:\nSTDOUT: {result.stdout}\nSTDERR: {result.stderr}"
+    assert result.returncode == 0, f"Policy analyzer failed:\nSTDOUT: {result.stdout}\nSTDERR: {result.stderr}"
 
 
 def test_tracking_harness_execution():

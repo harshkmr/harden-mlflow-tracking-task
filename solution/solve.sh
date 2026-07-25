@@ -7,7 +7,7 @@ echo "Starting solution to resolve git rebase conflicts and harden MLflow tracki
 cat << 'EOF' > /app/src/config.py
 import os
 
-# Security Hardened Configuration
+# Hardened Configuration
 TRACKING_URI = os.getenv("MLFLOW_TRACKING_URI", "file:///app/mlruns")
 ARTIFACT_LOCATION = os.getenv("MLFLOW_ARTIFACT_LOCATION", "/app/mlruns")
 EXPERIMENT_NAME = "huggingface_eval_hardened"
@@ -86,8 +86,8 @@ if __name__ == "__main__":
     main()
 EOF
 
-# Step 3: Verify static security analyzer
-python /app/security_analyzer.py
+# Step 3: Verify static policy analyzer
+python /app/policy_analyzer.py
 
 # Step 4: Verify execution of tracking harness
 python /app/src/tracking_harness.py

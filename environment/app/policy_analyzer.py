@@ -22,7 +22,7 @@ def check_conflict_markers(app_dir: Path):
     return violations
 
 
-def check_security_rules(app_dir: Path):
+def check_policy_rules(app_dir: Path):
     violations = []
     harness_path = app_dir / "src" / "tracking_harness.py"
     config_path = app_dir / "src" / "config.py"
@@ -35,7 +35,7 @@ def check_security_rules(app_dir: Path):
 
     combined_code = harness_code + "\n" + config_code
 
-    # Check 1: Insecure Tracking URIs
+    # Check 1: Tracking URIs
     insecure_uri_patterns = [
         r"http://0\.0\.0\.0",
         r"http://127\.0\.0\.1:5000(?!\s*#|\s*/\?auth)",
@@ -46,7 +46,7 @@ def check_security_rules(app_dir: Path):
         if re.search(pattern, combined_code):
             violations.append(f"Insecure unauthenticated HTTP tracking URI detected matching pattern: {pattern}")
 
-    # Check 2: Unsafe Artifact Paths
+    # Check 2: Artifact Store Paths
     unsafe_artifact_patterns = [
         r'["\']/tmp/[^"\']*["\']',
         r'["\']/var/[^"\']*["\']',
@@ -84,20 +84,20 @@ def check_security_rules(app_dir: Path):
 
 def main():
     app_dir = Path("/app") if Path("/app").exists() else Path(__file__).parent
-    print(f"[Security Analyzer] Inspecting repository at {app_dir}...")
+    print(f"[Policy Analyzer] Inspecting repository at {app_dir}...")
 
     conflict_violations = check_conflict_markers(app_dir)
-    security_violations = check_security_rules(app_dir)
+    policy_violations = check_policy_rules(app_dir)
 
-    all_violations = conflict_violations + security_violations
+    all_violations = conflict_violations + policy_violations
 
     if all_violations:
-        print("[FAIL] Security & Policy Violations Found:")
+        print("[FAIL] Policy Violations Found:")
         for v in all_violations:
             print(f"  - {v}")
         sys.exit(1)
     else:
-        print("[PASS] No security violations detected. Repository compliance verified.")
+        print("[PASS] No policy violations detected. Repository compliance verified.")
         sys.exit(0)
 
 
