@@ -7,7 +7,7 @@ from pathlib import Path
 
 def check_conflict_markers(app_dir: Path):
     violations = []
-    conflict_pattern = re.compile(r"^(<<<<<<<|=======|>>>>>>>)", re.MULTILINE)
+    conflict_pattern = re.compile(r"^(#\s*)?(<<<<<<<|=======|>>>>>>>)", re.MULTILINE)
     for root, _, files in os.walk(app_dir):
         if ".git" in root or "__pycache__" in root or "mlruns" in root:
             continue

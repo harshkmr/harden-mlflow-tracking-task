@@ -16,7 +16,7 @@ codebase_size = "minimal"
 # Coding languages used in the oracle solution or required by the agent
 languages = [ "python", "bash" ]
 # For tool_specific, api_integration, and db_interaction subcategories, please include specific tool, api framework, or database software
-tags = [ "file-operations", "mlflow", "security", "git" ]
+tags = [ "file-operations", "mlflow", "git", "python" ]
 # Estimated time to complete (minutes)
 expert_time_estimate_min = 60
 junior_time_estimate_min = 120
