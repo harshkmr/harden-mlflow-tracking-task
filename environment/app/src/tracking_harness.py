@@ -1,9 +1,9 @@
 import math
 import os
 
-from config import APPROVED_METADATA_KEYS, EXPERIMENT_NAME
 import mlflow
 import torch
+from config import APPROVED_METADATA_KEYS, EXPERIMENT_NAME
 from transformers import AutoModelForCausalLM, AutoTokenizer
 
 
